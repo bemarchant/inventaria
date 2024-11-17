@@ -1,0 +1,41 @@
+name: Deploy Lambdas to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install AWS CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y awscli
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Install AWS SAM CLI
+      run: |
+        curl -Lo sam-installation.sh https://raw.githubusercontent.com/aws/aws-sam-cli/main/scripts/install.bash
+        bash sam-installation.sh --update
+
+    - name: Deploy to AWS
+      run: |
+        sam build
+        sam deploy --stack-name my-lambda-stack --no-confirm-changeset --capabilities CAPABILITY_IAM
