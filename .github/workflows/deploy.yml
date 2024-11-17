@@ -33,5 +33,8 @@ jobs:
 
     - name: Deploy to AWS
       run: |
-        sam build
-        sam deploy --stack-name my-lambda-stack --no-confirm-changeset --capabilities CAPABILITY_IAM
+        sam deploy \
+          --template-file .aws-sam/build/template.yaml \
+          --stack-name my-lambda-stack \
+          --s3-bucket inventaria-sam-artifacts \
+          --capabilities CAPABILITY_IAM
