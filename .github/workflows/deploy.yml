@@ -18,10 +18,10 @@ jobs:
       with:
         python-version: '3.9'
 
-  - name: Install AWS SAM CLI
-    run: |
-      brew tap aws/tap
-      brew install aws-sam-cli
+    - name: Install AWS SAM CLI
+      run: |
+        brew tap aws/tap
+        brew install aws-sam-cli
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v3
