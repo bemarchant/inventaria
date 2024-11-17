@@ -31,6 +31,9 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
+    - name: Build SAM Application
+      run: sam build
+
     - name: Deploy to AWS
       run: |
         sam deploy \
