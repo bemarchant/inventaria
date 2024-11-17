@@ -22,7 +22,7 @@ jobs:
       run: |
         curl -sL https://github.com/aws/aws-sam-cli/releases/download/v1.77.0/aws-sam-cli-linux-x86_64.zip -o sam-cli.zip
         unzip sam-cli.zip -d sam-cli
-        sudo ./sam-cli/install
+        sudo ./sam-cli/install --update
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v3
