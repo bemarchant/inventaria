@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  Function1:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: function1.app.lambda_handler
+      Runtime: python3.9
+      CodeUri: Function1
+      Role: arn:aws:iam::307154673918:role/lambda-execution-role
+    Metadata:
+      SamResourceId: Function1
+  Function2:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: function2.app.lambda_handler
+      Runtime: python3.9
+      CodeUri: Function2
+      Role: arn:aws:iam::307154673918:role/lambda-execution-role
+    Metadata:
+      SamResourceId: Function2
