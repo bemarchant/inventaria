@@ -40,4 +40,5 @@ jobs:
           --template-file .aws-sam/build/template.yaml \
           --stack-name my-lambda-stack \
           --s3-bucket inventaria-sam-artifacts \
-          --capabilities CAPABILITY_IAM
+          --capabilities CAPABILITY_IAM \
+          --disable-rollback
