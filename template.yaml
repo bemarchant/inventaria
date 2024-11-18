@@ -4,7 +4,7 @@ Resources:
   Function1:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: function1.lambda_function.lambda_handler
+      Handler: lambda_function.lambda_handler
       Runtime: python3.9
       CodeUri: lambdas/function1/
       Role: arn:aws:iam::307154673918:role/lambda-execution-role
@@ -19,7 +19,7 @@ Resources:
   Function2:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: function2.app.lambda_handler
+      Handler: app.lambda_handler
       Runtime: python3.9
       CodeUri: lambdas/function2/
       Role: arn:aws:iam::307154673918:role/lambda-execution-role
