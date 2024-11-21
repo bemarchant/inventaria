@@ -11,7 +11,7 @@ Resources:
       Role: arn:aws:iam::307154673918:role/lambda-execution-role
       Timeout: 900
       Layers:
-        - arn:aws:lambda:us-east-1:307154673918:layer:psycopg2-layer:1
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python39-psycopg2-binary:1
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python39-Arm64:25
       Events:
         ScheduleTrigger:
