@@ -752,6 +752,55 @@ def upload_returns_inventaria_sheet(returns):
 
     return
 
+def upload_metric_2(metric_2):
+    import psycopg2
+    from psycopg2 import sql
+
+    # Conectar a la base de datos
+    conn = psycopg2.connect(
+        dbname="inventaria_db",
+        user="inventaria",
+        password="NhQsFpmSjD3LwQc",
+        host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
+    )
+    cursor = conn.cursor()
+
+    # Consulta SQL para insertar o actualizar en caso de conflicto
+    upsert_query = sql.SQL("""
+        INSERT INTO "metric2" (
+            "date", "createdAt", "updatedAt", 
+            "deviation", "net", "companyId"
+        ) VALUES (%s, %s, %s, %s, %s, %s)
+        ON CONFLICT ("date", "companyId") DO UPDATE SET
+            "updatedAt" = EXCLUDED."updatedAt",
+            "deviation" = EXCLUDED."deviation",
+            "net" = EXCLUDED."net";
+    """)
+
+    # Convertir la fecha de envío a un formato adecuado
+    date = metric_2['date']
+    try:
+        # Ejecutar la consulta de inserción o actualización
+        cursor.execute(upsert_query, (
+            date,
+            metric_2['createdAt'],  
+            metric_2['updatedAt'],              
+            metric_2['deviation'],         
+            metric_2['net'],                    
+            metric_2['companyId']    
+        ))
+        conn.commit()
+        print(f"Métrica 2 procesada correctamente para la fecha {metric_2['date']} y compañía {metric_2['companyId']}.")
+    except Exception as e:
+        print(f"Error al procesar la métrica 2: {metric_2}: {e}")
+        conn.rollback()
+
+    # Cerrar cursor y conexión
+    cursor.close()
+    conn.close()
+
+    return
+
 def load_existing_products():
     """Carga todos los productos existentes en la base de datos en un diccionario."""
     conn = psycopg2.connect(
@@ -996,10 +1045,12 @@ def get_continuous_alert_days(alerts, product_code, alert_type):
         previous_date = product_alerts[0]['date']
         previous_date = datetime.strptime(previous_date, '%Y-%m-%d').date()
 
-        for alert in product_alerts[1:]:
+        for alert in product_alerts[0:]:
             current_date = alert['date']
             current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
-
+            if previous_date == current_date:
+                consecutive_days += 1
+                continue
             if previous_date - current_date == timedelta(days=1):
                 consecutive_days += 1
                 previous_date = current_date

@@ -51,7 +51,6 @@ def zero_stock_alert(stocks, products):
 
     alerts = get_inventaria_metrics(alert_type='stock_zero')
     for stock in zero_stock_stocks:
-        print(f"zero_stock_alert - stock : {stock}")
         try:
             product_id = int(stock.get('product_id'))
             product = product_map.get(product_id)
@@ -137,11 +136,11 @@ def critical_stock_alert(stocks , products):
     shipping_movements = get_inventaria_sheet_data(start_date.strftime('%Y-%m-%d'), today, movement_type="mov_shipping")
     
     alerts = get_inventaria_metrics(alert_type='stock_critical')
+
     categories = categories_fetch()
 
     for stock in stocks:
         try:
-            print(f"critical_stock_alert - stock : {stock}")
             product_id = int(stock.get('product_id'))
             stock_quantity = int(stock.get('stock_quantity'))
             product = product_map.get(product_id)
@@ -316,7 +315,6 @@ def hand_on_alert(stocks, products):
 
     for stock in stocks:
         try:
-            print(f"hand_on_alert - stock : {stock}")
             product_id = int(stock.get('product_id'))
             stock_quantity = int(stock.get('stock_quantity'))
             product = product_map.get(product_id)
@@ -405,8 +403,7 @@ def fix_stock(products, consumptions):
         alerts = get_inventaria_metrics(alert_type='fix_stock')
 
         for consumption in consumptions:
-            print(f"consumption : {consumption}")
-            consumption_date = datetime.strptime(consumption['date'], '%Y-%m-%d').date()
+            consumption_date = consumption['date']
             if consumption_date != yesterday_date:
                 continue
             try:
@@ -485,23 +482,18 @@ def returns_qty_alert(products, current_datetime, returns):
         # Preparar las métricas
         metrics = []
         
-        yesterday_date = (current_datetime - timedelta(days=1)).date()
+        yesterday_date = (current_datetime - timedelta(days=1))
 
         alerts = get_inventaria_metrics(alert_type='return_qty')
         
         for item in returns:
-            print(f"item : {item}")
-            print(f"yesterday : {yesterday_date}")
             return_date = item['date']
-            print(f"return_date : {return_date}")
 
             if return_date != yesterday_date:
                 continue
             try:
                 variant_id = int(item.get('product_id'))
-                print(f"variant_id : {variant_id}")
                 product = product_map.get(variant_id)
-                print(f"product : {product}")
                 quantity = item.get('quantity')
                 cost =  int(item.get('cost'))
 
