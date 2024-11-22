@@ -4,7 +4,7 @@ Resources:
   Function1:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: Function1
+      FunctionName: lambda_inventaria_alerts
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
       Architectures: 
@@ -19,7 +19,7 @@ Resources:
         ScheduleTrigger:
           Type: Schedule
           Properties:
-            Schedule: "cron(0 7 * * ? *)"
+            Schedule: "cron(30 6 * * ? *)"
   Function2:
     Type: AWS::Serverless::Function
     Properties:
@@ -57,4 +57,4 @@ Resources:
         ScheduleTrigger:
           Type: Schedule
           Properties:
-            Schedule: "cron(0 3 ? * 1 *)"
+            Schedule: "cron(0 6 ? * 1 *)"

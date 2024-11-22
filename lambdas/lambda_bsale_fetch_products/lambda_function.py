@@ -12,7 +12,6 @@ def lambda_handler(event=None, context=None):
     start_time = time.time()
     chile_tz = pytz.timezone('America/Santiago')
     today = datetime.now(chile_tz).date()
-    date_obj = (today - timedelta(days=10))
 
     products = products_fetch()
     product_map = {product['id']: product for product in products}
