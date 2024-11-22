@@ -15,12 +15,7 @@ def lambda_handler(event=None, context=None):
     start_time = time.time()
     chile_tz = pytz.timezone('America/Santiago')
     today = datetime.now(chile_tz).date()
-    date_str = (today - timedelta(days=10)).strftime('%Y-%m-%d')
     date_obj = (today - timedelta(days=10))
-
-    # Actualizamos el stock de los productos
-    # stocks = stocks_fetch()
-    # upload_stocks(stocks)
 
     # products = products_fetch()
     # product_map = {product['id']: product for product in products}
@@ -38,16 +33,11 @@ def lambda_handler(event=None, context=None):
 #         product['cost'] = variant_cost
 #         insert_product_to_db(product)
 
-    shippings = shippings_fetch(date_str)
-    upload_shippings_inventaria_sheet(shippings=shippings)
-    consumptions = consumptions_fetch(date_str)
-    upload_consumptions_inventaria_sheet(consumptions=consumptions) 
-    returns = returns_fetch(date_str)
-    upload_returns_inventaria_sheet(returns)
-
     stocks = get_inventaria_stocks()
     shippings = get_inventaria_sheet_data("1900-01-01", datetime.now().strftime('%Y-%m-%d'), "mov_shipping")
     consumptions = get_inventaria_sheet_data("1900-01-01", datetime.now().strftime('%Y-%m-%d'), "mov_consumption")
+    returns = get_inventaria_sheet_data("1900-01-01", datetime.now().strftime('%Y-%m-%d'), "mov_return")
+
     products = get_products()
     product_map = {product['id']: product for product in products}
 
