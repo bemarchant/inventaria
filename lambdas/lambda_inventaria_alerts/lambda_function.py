@@ -8,9 +8,7 @@ import pytz
 import time
 
 def lambda_handler(event=None, context=None):
-    """
-    Función principal de Lambda para gestionar el flujo de alertas e inventarios.
-    """
+
     start_time = time.time()
     chile_tz = pytz.timezone('America/Santiago')
     today = datetime.now(chile_tz).date()
