@@ -15,15 +15,17 @@ def get_secret(secret_name, region_name="us-east-1"):
         print(f"Error al obtener el secreto: {e}")
         return None
 
-secrets = get_secret("prod/inventaria/aws_cli")
-
+secrets_aws = get_secret("prod/inventaria/aws_cli")
+secrets_rds = get_secret("prod/inventaria/rds")
 # Asignar variables desde Secrets Manager o con valores predeterminados
-# INVENTARIA_POSTGRES_DB = secrets.get("INVENTARIA_POSTGRES_DB", "default_db")
-# INVENTARIA_POSTGRES_USER = secrets.get("INVENTARIA_POSTGRES_USER", "default_user")
-# INVENTARIA_POSTGRES_PASSWORD = secrets.get("INVENTARIA_POSTGRES_PASSWORD", "default_password")
-# INVENTARIA_POSTGRES_HOST = secrets.get("INVENTARIA_POSTGRES_HOST", "localhost")
-AWS_ACCESS_KEY_ID = secrets.get("AWS_ACCESS_KEY_ID", "")
-AWS_SECRET_ACCESS_KEY = secrets.get("AWS_SECRET_ACCESS_KEY", "")
+INVENTARIA_POSTGRES_DB = secrets_rds.get("dbInstanceIdentifier", "default_db")
+INVENTARIA_POSTGRES_USER = secrets_rds.get("username", "default_user")
+INVENTARIA_POSTGRES_PASSWORD = secrets_rds.get("password", "default_password")
+INVENTARIA_POSTGRES_HOST = secrets_rds.get("host", "localhost")
+AWS_SECRET_ACCESS_KEY = secrets_aws.get("AWS_SECRET_ACCESS_KEY", "")
+AWS_ACCESS_KEY_ID = secrets_aws.get("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = secrets_aws.get("AWS_SECRET_ACCESS_KEY", "")
+
 # BUCKET_NAME = secrets.get("BUCKET_NAME", "default_bucket")
 # WHATSAPP_ACCESS_TOKEN = secrets.get("WHATSAPP_ACCESS_TOKEN", "")
 
