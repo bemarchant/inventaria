@@ -44,11 +44,11 @@ def get_db_connection():
     """
     try:
         conn = psycopg2.connect(
-            host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com",
-            database="inventaria_db",
-            user="inventaria",
-            password="NhQsFpmSjD3LwQc",
-            port=5432
+            host=INVENTARIA_POSTGRES_HOST,
+            database=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            port=INVENTARIA_POSTGRES_PORT
         )
         return conn
     except psycopg2.Error as db_err:
@@ -57,10 +57,11 @@ def get_db_connection():
 
 def insert_product_to_db(product):
     conn = psycopg2.connect(
-        host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com",
-        database="inventaria_db",
-        user="inventaria",
-        password="NhQsFpmSjD3LwQc"
+            host=INVENTARIA_POSTGRES_HOST,
+            database=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            port=INVENTARIA_POSTGRES_PORT
     )
     cursor = conn.cursor()
 
@@ -303,10 +304,11 @@ def get_product_by_variant_id(variant_id):
     try:
         # Conectar a la base de datos
         conn = psycopg2.connect(
-            dbname="inventaria_db",
-            user="inventaria",
-            password="NhQsFpmSjD3LwQc",
-            host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
         )
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute(query, (variant_id,))
@@ -330,10 +332,11 @@ def get_product_by_id(product_id):
     try:
         # Conectar a la base de datos
         conn = psycopg2.connect(
-            dbname="inventaria_db",
-            user="inventaria",
-            password="NhQsFpmSjD3LwQc",
-            host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
         )
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute(query, (product_id,))
@@ -426,11 +429,11 @@ def load_products_by_variant_ids(variant_ids):
     """
     try:
         conn = psycopg2.connect(
-            dbname="inventaria_db",
-            user="inventaria",
-            password="NhQsFpmSjD3LwQc",
-            host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com",
-            port=5432
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
         )
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(query, (tuple(variant_ids),))
@@ -489,11 +492,11 @@ def upload_stocks(stocks, batch_size=1000):
     # Conectar a la base de datos una sola vez
     try:
         conn = psycopg2.connect(
-            dbname="inventaria_db",
-            user="inventaria",
-            password="NhQsFpmSjD3LwQc",
-            host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com",
-            port=5432
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
         )
         cursor = conn.cursor()
 
@@ -567,10 +570,11 @@ def upload_shippings_inventaria_sheet(shippings):
 
     # Conectar a la base de datos
     conn = psycopg2.connect(
-        dbname="inventaria_db",
-        user="inventaria",
-        password="NhQsFpmSjD3LwQc",
-        host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
     )
     cursor = conn.cursor()
 
@@ -630,10 +634,11 @@ def upload_consumptions_inventaria_sheet(consumptions):
     print(consumptions)
     # Conectar a la base de datos
     conn = psycopg2.connect(
-        dbname="inventaria_db",
-        user="inventaria",
-        password="NhQsFpmSjD3LwQc",
-        host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
     )
     cursor = conn.cursor()
 
@@ -693,10 +698,11 @@ def upload_returns_inventaria_sheet(returns):
 
     # Conectar a la base de datos
     conn = psycopg2.connect(
-        dbname="inventaria_db",
-        user="inventaria",
-        password="NhQsFpmSjD3LwQc",
-        host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
     )
     cursor = conn.cursor()
 
@@ -758,10 +764,11 @@ def upload_metric_2(metric_2):
 
     # Conectar a la base de datos
     conn = psycopg2.connect(
-        dbname="inventaria_db",
-        user="inventaria",
-        password="NhQsFpmSjD3LwQc",
-        host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
     )
     cursor = conn.cursor()
 
@@ -804,10 +811,11 @@ def upload_metric_2(metric_2):
 def load_existing_products():
     """Carga todos los productos existentes en la base de datos en un diccionario."""
     conn = psycopg2.connect(
-        dbname="inventaria_db",
-        user="inventaria",
-        password="NhQsFpmSjD3LwQc",
-        host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
+            dbname=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            host=INVENTARIA_POSTGRES_HOST,
+            port=INVENTARIA_POSTGRES_PORT
     )
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -839,10 +847,11 @@ def insert_products_batch(products, existing_products):
 
     # Conectar a la base de datos
     conn = psycopg2.connect(
-        host="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com",
-        database="inventaria_db",
-        user="inventaria",
-        password="NhQsFpmSjD3LwQc"
+            host=INVENTARIA_POSTGRES_HOST,
+            database=INVENTARIA_POSTGRES_DB,
+            user=INVENTARIA_POSTGRES_USER,
+            password=INVENTARIA_POSTGRES_PASSWORD,
+            port=INVENTARIA_POSTGRES_PORT
     )
     cursor = conn.cursor()
 
