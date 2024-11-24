@@ -2,6 +2,17 @@ import boto3
 import json
 import os
 
+# inventaria_const.py
+def get_db_config():
+    secrets_rds = get_secret("prod/inventaria/rds/inventaria_db")
+    return {
+        "host": secrets_rds.get("host", "localhost"),
+        "db": secrets_rds.get("dbInstanceIdentifier", "default_db"),
+        "user": secrets_rds.get("username", "default_user"),
+        "password": secrets_rds.get("password", "default_password"),
+        "port": "5432",
+    }
+
 def get_secret(secret_name, region_name="us-east-1"):
     # Crear un cliente de Secrets Manager
     client = boto3.client("secretsmanager", region_name=region_name)

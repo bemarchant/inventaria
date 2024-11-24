@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from bsale_utils import get_product_detail
-from inventaria_const import *
+from inventaria_const import get_db_config
 
 import psycopg2
 import pytz
@@ -15,54 +15,28 @@ logger = logging.getLogger(__name__)
 base_url = "https://api.bsale.io/v1"
 access_token = "10fe11c752e82a0159f61cbf40791b96b287fbf9"
 
-# def get_continuous_alert_days(dates_laboral, results):
-#     dates_alert = [row['date'].date() for row in results]
-
-#     last_continuous_alert = []
-#     current_streak = []
-    
-#     for date in dates_laboral:
-#         date_only = date.date() 
-#         if date_only in dates_alert:
-#             current_streak.append(date)
-#         else:
-#             if current_streak:
-#                 last_continuous_alert = current_streak
-#                 current_streak = []
-
-#         if current_streak:
-#             last_continuous_alert = current_streak
-            
-#     return len(last_continuous_alert)
-
 def get_db_connection():
-    """
-    Establece y retorna una conexión a la base de datos PostgreSQL.
-    
-    Returns:
-        psycopg2.extensions.connection: Objeto de conexión a la base de datos.
-    """
+    db_config = get_db_config()
     try:
         conn = psycopg2.connect(
-            host=INVENTARIA_POSTGRES_HOST,
-            database=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            port=INVENTARIA_POSTGRES_PORT
+            host=db_config["host"],
+            database=db_config["db"],
+            user=db_config["user"],
+            password=db_config["password"],
+            port=db_config["port"],
         )
         return conn
     except psycopg2.Error as db_err:
         logger.error(f"Error al conectarse a la base de datos: {db_err}")
         return None
-
+    
 def insert_product_to_db(product):
-    conn = psycopg2.connect(
-            host=INVENTARIA_POSTGRES_HOST,
-            database=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            port=INVENTARIA_POSTGRES_PORT
-    )
+    
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos para subir métricas.")
+        return
+    
     cursor = conn.cursor()
 
     # SQL query to insert a new product or update if it already exists
@@ -300,16 +274,12 @@ def get_product_by_variant_id(variant_id):
     FROM inventaria_app_product
     WHERE source_id = %s;
     """
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos para subir métricas.")
+        return
 
     try:
-        # Conectar a la base de datos
-        conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-        )
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute(query, (variant_id,))
         product = cur.fetchone() 
@@ -328,16 +298,12 @@ def get_product_by_id(product_id):
     FROM inventaria_app_product
     WHERE id = %s;
     """
-
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos para subir métricas.")
+        return
+    
     try:
-        # Conectar a la base de datos
-        conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-        )
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute(query, (product_id,))
         product = cur.fetchone() 
@@ -428,13 +394,10 @@ def load_products_by_variant_ids(variant_ids):
     WHERE source_id IN %s;
     """
     try:
-        conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-        )
+        conn = get_db_connection()
+        if not conn:
+            logger.error("No se pudo establecer conexión a la base de datos para obtener productos.")
+            return 
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(query, (tuple(variant_ids),))
         products = cursor.fetchall()
@@ -491,13 +454,10 @@ def upload_stocks(stocks, batch_size=1000):
 
     # Conectar a la base de datos una sola vez
     try:
-        conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-        )
+        conn = get_db_connection()
+        if not conn:
+            logger.error("No se pudo establecer conexión a la base de datos.")
+            return 
         cursor = conn.cursor()
 
         # Definir la consulta SQL con placeholders
@@ -568,14 +528,12 @@ def get_inventaria_stocks():
 
 def upload_shippings_inventaria_sheet(shippings):
     print(f"INVENTARIA_POSTGRES_HOST : {INVENTARIA_POSTGRES_HOST}")
-    # Conectar a la base de datos
-    conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-    )
+    
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos.")
+        return 
+    
     cursor = conn.cursor()
 
     # Consulta SQL para insertar o actualizar un envío en la tabla InventariaSheet
@@ -631,15 +589,12 @@ def upload_shippings_inventaria_sheet(shippings):
     return
 
 def upload_consumptions_inventaria_sheet(consumptions):
-    print(consumptions)
-    # Conectar a la base de datos
-    conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-    )
+
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos.")
+        return 
+    
     cursor = conn.cursor()
 
     # Consulta SQL para insertar o actualizar un envío en la tabla InventariaSheet
@@ -657,8 +612,6 @@ def upload_consumptions_inventaria_sheet(consumptions):
     """)
 
     for consumption in consumptions:
-        print(f"upload_consumptions_inventaria_sheet")
-        print(f"consumption : {consumption}")
         # Convertir la fecha de envío a un formato adecuado
         consumption_date = datetime.strptime(consumption['consumption_date'], '%Y-%m-%d')
         consumption_date = consumption_date.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=timezone.utc)
@@ -696,14 +649,11 @@ def upload_consumptions_inventaria_sheet(consumptions):
 
 def upload_returns_inventaria_sheet(returns):
 
-    # Conectar a la base de datos
-    conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-    )
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos.")
+        return
+    
     cursor = conn.cursor()
 
     # Consulta SQL para insertar o actualizar un envío en la tabla InventariaSheet
@@ -759,17 +709,12 @@ def upload_returns_inventaria_sheet(returns):
     return
 
 def upload_metric_2(metric_2):
-    import psycopg2
-    from psycopg2 import sql
 
-    # Conectar a la base de datos
-    conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-    )
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos.")
+        return 
+    
     cursor = conn.cursor()
 
     # Consulta SQL para insertar o actualizar en caso de conflicto
@@ -810,13 +755,11 @@ def upload_metric_2(metric_2):
 
 def load_existing_products():
     """Carga todos los productos existentes en la base de datos en un diccionario."""
-    conn = psycopg2.connect(
-            dbname=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            host=INVENTARIA_POSTGRES_HOST,
-            port=INVENTARIA_POSTGRES_PORT
-    )
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos.")
+        return 
+    
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     # Cargar todos los productos existentes
@@ -845,14 +788,11 @@ def insert_products_batch(products, existing_products):
         print("No hay productos nuevos para insertar.")
         return
 
-    # Conectar a la base de datos
-    conn = psycopg2.connect(
-            host=INVENTARIA_POSTGRES_HOST,
-            database=INVENTARIA_POSTGRES_DB,
-            user=INVENTARIA_POSTGRES_USER,
-            password=INVENTARIA_POSTGRES_PASSWORD,
-            port=INVENTARIA_POSTGRES_PORT
-    )
+    conn = get_db_connection()
+    if not conn:
+        logger.error("No se pudo establecer conexión a la base de datos.")
+        return 
+    
     cursor = conn.cursor()
 
     # Inserción masiva
@@ -933,10 +873,6 @@ def inventaria_upload_variants(variants, product_map, batch_size=50):
 
     return variants
 
-def get_metrics():
-
-    return
-
 def get_inventaria_metrics(date=None, alert_level=None, alert_type=None):
     """
     Retrieves a list of dictionaries representing metrics (alerts), including associated product data.
@@ -1015,7 +951,7 @@ def get_inventaria_sheet_data(start_date, end_date, movement_type):
     conn = get_db_connection()
     if not conn:
         logger.error("No se pudo establecer conexión a la base de datos.")
-        return []
+        return 
 
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cursor:
