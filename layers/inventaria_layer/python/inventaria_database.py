@@ -567,7 +567,7 @@ def get_inventaria_stocks():
         conn.close()
 
 def upload_shippings_inventaria_sheet(shippings):
-
+    print(f"INVENTARIA_POSTGRES_HOST : {INVENTARIA_POSTGRES_HOST}")
     # Conectar a la base de datos
     conn = psycopg2.connect(
             dbname=INVENTARIA_POSTGRES_DB,
@@ -597,7 +597,7 @@ def upload_shippings_inventaria_sheet(shippings):
         # Convertir la fecha de envío a un formato adecuado
         shipping_date = datetime.strptime(shipping['shipping_date'], '%Y-%m-%d')
         shipping_date = shipping_date.replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=timezone.utc)
-
+        print(f"shipping_date : {shipping_date}")
         # Obtener detalles del producto basado en el variant_id
         product = get_product_by_variant_id(shipping['variant_id'])
         
