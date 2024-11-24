@@ -1,4 +1,14 @@
-# lambda_function.py
+import sys
+import os
+
+is_local = os.environ.get("AWS_EXECUTION_ENV") is None
+
+if is_local:
+    layer_path = os.path.join(
+        os.path.dirname(__file__), '..', '..', 'layers', 'inventaria_layer', 'python'
+    )
+    if layer_path not in sys.path:
+        sys.path.append(layer_path)
 
 from bsale_utils import returns_fetch, consumptions_fetch, stocks_fetch, shippings_fetch
 from inventaria_database import upload_returns_inventaria_sheet, upload_stocks, upload_shippings_inventaria_sheet, upload_consumptions_inventaria_sheet

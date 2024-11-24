@@ -16,7 +16,7 @@ def get_secret(secret_name, region_name="us-east-1"):
         return None
 
 secrets_aws = get_secret("prod/inventaria/aws_cli")
-secrets_rds = get_secret("prod/inventaria/rds")
+secrets_rds = get_secret("prod/inventaria/rds/inventaria_db")
 # Asignar variables desde Secrets Manager o con valores predeterminados
 INVENTARIA_POSTGRES_DB = secrets_rds.get("dbInstanceIdentifier", "default_db")
 INVENTARIA_POSTGRES_USER = secrets_rds.get("username", "default_user")
