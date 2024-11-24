@@ -27,6 +27,7 @@ AWS_SECRET_ACCESS_KEY = secrets_aws.get("AWS_SECRET_ACCESS_KEY", "")
 AWS_ACCESS_KEY_ID = secrets_aws.get("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = secrets_aws.get("AWS_SECRET_ACCESS_KEY", "")
 
+print(f"INVENTARIA_POSTGRES_HOST : {INVENTARIA_POSTGRES_HOST}")
 # BUCKET_NAME = secrets.get("BUCKET_NAME", "default_bucket")
 # WHATSAPP_ACCESS_TOKEN = secrets.get("WHATSAPP_ACCESS_TOKEN", "")
 
