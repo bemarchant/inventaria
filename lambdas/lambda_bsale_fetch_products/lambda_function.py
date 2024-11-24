@@ -1,17 +1,21 @@
-# lambda_function.py
+import sys
+import os
 
-from bsale_utils import fetch_variant_cost, returns_fetch, variants_fetch, products_fetch, consumptions_fetch, stocks_fetch, shippings_fetch
+is_local = os.environ.get("AWS_EXECUTION_ENV") is None
+
+if is_local:
+    layer_path = os.path.join(
+        os.path.dirname(__file__), '..', '..', 'layers', 'inventaria_layer', 'python'
+    )
+    if layer_path not in sys.path:
+        sys.path.append(layer_path)
+
+from bsale_utils import fetch_variant_cost, variants_fetch, products_fetch
 from inventaria_database import upload_metric_2, insert_product_to_db, upload_returns_inventaria_sheet, inventaria_upload_variants, get_products, upload_stocks, get_inventaria_metrics, get_inventaria_sheet_data, upload_shippings_inventaria_sheet, get_inventaria_stocks, upload_consumptions_inventaria_sheet
-from inventaria_bsale_alerts import returns_qty_alert, hand_on_alert, zero_stock_alert, critical_stock_alert, low_rotation_alert, fix_stock
-from utils.bsale_email import send_alert_email
-from datetime import datetime, timedelta
-import pytz
 import time
 
 def lambda_handler(event=None, context=None):
     start_time = time.time()
-    chile_tz = pytz.timezone('America/Santiago')
-    today = datetime.now(chile_tz).date()
 
     products = products_fetch()
     product_map = {product['id']: product for product in products}

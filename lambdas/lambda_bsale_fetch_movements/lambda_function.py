@@ -11,12 +11,12 @@ def lambda_handler(event=None, context=None):
     start_time = time.time()
     chile_tz = pytz.timezone('America/Santiago')
     today = datetime.now(chile_tz).date()
-    date_str = (today - timedelta(days=10)).strftime('%Y-%m-%d')
-
+    date_str = (today - timedelta(days=0)).strftime('%Y-%m-%d')
+    print(f"update for : {date_str}")
     #Actualizamos el stock de los productos
-    stocks = stocks_fetch()
-    upload_stocks(stocks)
-
+    # stocks = stocks_fetch()
+    # upload_stocks(stocks)
+    
     shippings = shippings_fetch(date_str)
     upload_shippings_inventaria_sheet(shippings=shippings)
     consumptions = consumptions_fetch(date_str)

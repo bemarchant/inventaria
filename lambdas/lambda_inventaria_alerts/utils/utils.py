@@ -1,5 +1,5 @@
 
-from inventaria_const import *
+from layers.inventaria_layer.python.inventaria_const import *
 
 def shipping_quantity_mean(shipping_movements, product_id):
     """

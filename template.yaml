@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Resources:
-  InventariaDatabaseLayer:
+  InventariaLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: inventaria_database_layer
-      Description: Shared code for Inventaria database functions
-      ContentUri: layers/inventaria_database_layer/
+      LayerName: inventaria_layer
+      Description: Shared code for Inventaria functions
+      ContentUri: layers/inventaria_layer/
       CompatibleRuntimes:
         - python3.9
   Function1:
@@ -22,7 +22,7 @@ Resources:
       Timeout: 900
       MemorySize: 1024
       Layers:
-        - !Ref InventariaDatabaseLayer 
+        - !Ref InventariaLayer 
         - arn:aws:lambda:us-east-1:307154673918:layer:psycopg2-layer:1
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python39-Arm64:25
       Events:
@@ -43,7 +43,7 @@ Resources:
       Timeout: 900
       MemorySize: 1024
       Layers:
-        - !Ref InventariaDatabaseLayer 
+        - !Ref InventariaLayer 
         - arn:aws:lambda:us-east-1:307154673918:layer:psycopg2-layer:1
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python39-Arm64:25
       Events:
@@ -64,7 +64,7 @@ Resources:
       Timeout: 900
       MemorySize: 1024
       Layers:
-        - !Ref InventariaDatabaseLayer 
+        - !Ref InventariaLayer 
         - arn:aws:lambda:us-east-1:307154673918:layer:psycopg2-layer:1
         - arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python39-Arm64:25
       Events:

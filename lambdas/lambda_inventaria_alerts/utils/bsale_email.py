@@ -1,5 +1,5 @@
 import boto3
-from inventaria_const import *
+from layers.inventaria_layer.python.inventaria_const import *
 from collections import defaultdict
 env = 'dev'
 

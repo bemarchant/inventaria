@@ -1,9 +1,19 @@
-# lambda_function.py
+import sys
+import os
+
+is_local = os.environ.get("AWS_EXECUTION_ENV") is None
+
+if is_local:
+    layer_path = os.path.join(
+        os.path.dirname(__file__), '..', '..', 'layers', 'inventaria_layer', 'python'
+    )
+    if layer_path not in sys.path:
+        sys.path.append(layer_path)
 
 from inventaria_database import upload_metric_2, get_products, get_inventaria_metrics, get_inventaria_sheet_data, get_inventaria_stocks
 from inventaria_bsale_alerts import returns_qty_alert, hand_on_alert, zero_stock_alert, critical_stock_alert, low_rotation_alert, fix_stock
 from utils.bsale_email import send_alert_email
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 import time
 
@@ -12,7 +22,7 @@ def lambda_handler(event=None, context=None):
     start_time = time.time()
     chile_tz = pytz.timezone('America/Santiago')
     today = datetime.now(chile_tz).date()
-    date_obj = (today - timedelta(days=10))
+    date_obj = today
 
     stocks = get_inventaria_stocks()
     shippings = get_inventaria_sheet_data("1900-01-01", datetime.now().strftime('%Y-%m-%d'), "mov_shipping")
