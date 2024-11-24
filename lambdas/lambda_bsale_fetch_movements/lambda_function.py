@@ -12,6 +12,7 @@ if is_local:
 
 from bsale_utils import returns_fetch, consumptions_fetch, stocks_fetch, shippings_fetch
 from inventaria_database import upload_returns_inventaria_sheet, upload_stocks, upload_shippings_inventaria_sheet, upload_consumptions_inventaria_sheet
+from inventaria_const import *
 from datetime import datetime, timedelta
 import pytz
 import time
@@ -23,6 +24,8 @@ def lambda_handler(event=None, context=None):
     today = datetime.now(chile_tz).date()
     date_str = (today - timedelta(days=0)).strftime('%Y-%m-%d')
     print(f"update for : {date_str}")
+    print(f"INVENTARIA_POSTGRES_HOST : {INVENTARIA_POSTGRES_HOST}")
+
     #Actualizamos el stock de los productos
     # stocks = stocks_fetch()
     # upload_stocks(stocks)
