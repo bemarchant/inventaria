@@ -1,7 +1,18 @@
+import sys
+import os
 import logging
 from datetime import datetime, timedelta
 import pytz
 
+is_local = os.environ.get("AWS_EXECUTION_ENV") is None
+
+if is_local:
+    layer_path = os.path.join(
+        os.path.dirname(__file__), '..', '..', 'layers', 'inventaria_layer', 'python'
+    )
+    if layer_path not in sys.path:
+        sys.path.append(layer_path)
+        
 from inventaria_database import (
     inventaria_upload_metrics,
     inventariaweb_upload_metrics,
@@ -60,8 +71,7 @@ def zero_stock_alert(stocks, products):
                 continue
 
             alert_days = get_continuous_alert_days(alerts, product['code'], alert_type='stock_zero')
-            price = product.get('cost', 0)
-
+            print(f"alert_days : {alert_days}")
             category_value = product.get('category', 'Unknown')
             category_id = int(category_value) if str(category_value).isdigit() else 0
             lote_type_name = category_map.get(category_id, 'Sin Categoría')
@@ -108,7 +118,7 @@ def zero_stock_alert(stocks, products):
 
     return
 
-def critical_stock_alert(stocks , products):
+def critical_stock_alert(current_datetime, stocks, products):
     """
     Genera y sube métricas de productos con stock crítico.
     """
@@ -125,15 +135,10 @@ def critical_stock_alert(stocks , products):
 
     # Preparar las métricas
     metrics = []
-    timezone = pytz.timezone('America/Santiago')
-    current_datetime = datetime.now(timezone)
 
     # Obtener el promedio de cantidad de envíos para los últimos 30 días
-    timezone = pytz.timezone('America/Santiago')
-    today = datetime.now(timezone).date()
-    yesterday = today - timedelta(days=1)
-    start_date = today - timedelta(days=30)
-    shipping_movements = get_inventaria_sheet_data(start_date.strftime('%Y-%m-%d'), today, movement_type="mov_shipping")
+    start_date = current_datetime - timedelta(days=30)
+    shipping_movements = get_inventaria_sheet_data(start_date.strftime('%Y-%m-%d'), current_datetime.date(), movement_type="mov_shipping")
     
     alerts = get_inventaria_metrics(alert_type='stock_critical')
 
@@ -200,7 +205,8 @@ def critical_stock_alert(stocks , products):
 
     return
 
-def low_rotation_alert(shippings, stocks, products):
+#Revisar por movimientos no atualizados entre 16-24
+def low_rotation_alert(current_datetime, shippings, stocks, products):
     """
     Genera y sube métricas de productos con baja rotación si el último movimiento
     de tipo 'mov_shipping' es mayor a 2 semanas.
@@ -222,20 +228,16 @@ def low_rotation_alert(shippings, stocks, products):
 
         # Preparar las métricas
         metrics = []
-        timezone = pytz.timezone('America/Santiago')
-        current_datetime = datetime.now(timezone)
         two_weeks_ago = (current_datetime - timedelta(weeks=2)).date()
         alerts = get_inventaria_metrics(alert_type='low_rotation')
-
+        
         for product in products:
             try:
                 product_id = product['id']
                 product_code =  product.get('code', 'Desconocido')
                 product_name = product.get('name', 'Desconocido')
                 last_shipping = get_last_shipping_date(shippings, product_id)
-
                 stock_quantity = stock_map.get((product_id, today_date), 0)
-
                 if (last_shipping is None or last_shipping < two_weeks_ago) and stock_quantity != 0:
 
                     alert_days = get_continuous_alert_days(alerts, product_name, alert_type='low_rotation')
@@ -287,7 +289,8 @@ def low_rotation_alert(shippings, stocks, products):
     except Exception as e:
         logger.error(f"Error inesperado en la función de alerta de baja rotación: {e}")
 
-def hand_on_alert(stocks, products):
+#Revisar por movimientos no atualizados entre 16-24
+def hand_on_alert(current_datetime, stocks, products):
 
     # Obtener todos los productos necesarios en una sola consulta
     logger.info(f"Total de productos obtenidos para métricas: {len(products)}")
@@ -301,14 +304,10 @@ def hand_on_alert(stocks, products):
 
     # Preparar las métricas
     metrics = []
-    timezone = pytz.timezone('America/Santiago')
-    current_datetime = datetime.now(timezone)
 
     # Obtener el promedio de cantidad de envíos para los últimos 30 días
-    timezone = pytz.timezone('America/Santiago')
-    today = datetime.now(timezone).date()
-    start_date = today - timedelta(days=30)
-    shipping_movements = get_inventaria_sheet_data(start_date.strftime('%Y-%m-%d'), today, movement_type="mov_shipping")
+    start_date = current_datetime - timedelta(days=30)
+    shipping_movements = get_inventaria_sheet_data(start_date.strftime('%Y-%m-%d'), current_datetime.date(), movement_type="mov_shipping")
     
     alerts = get_inventaria_metrics(alert_type='hand_on')
     categories = categories_fetch()
@@ -377,7 +376,8 @@ def hand_on_alert(stocks, products):
 
     return
 
-def fix_stock(products, consumptions):
+#Revisar por movimientos no atualizados entre 16-24
+def fix_stock(current_datetime, products, consumptions):
     """
     Genera y sube métricas de productos con ajuste de stock si el movimiento es
     de tipo 'mov_consumption'
@@ -396,8 +396,6 @@ def fix_stock(products, consumptions):
         
         # Preparar las métricas
         metrics = []
-        timezone = pytz.timezone('America/Santiago')
-        current_datetime = datetime.now(timezone)
         yesterday_date = (current_datetime - timedelta(days=1)).date()
 
         alerts = get_inventaria_metrics(alert_type='fix_stock')
@@ -462,7 +460,8 @@ def fix_stock(products, consumptions):
     except Exception as e:
         logger.error(f"Error inesperado en la función de alerta de ajuste de stock: {e}")
 
-def returns_qty_alert(products, current_datetime, returns):
+#Revisar por movimientos no atualizados entre 16-24
+def returns_qty_alert(current_datetime, products, returns):
     """
     Genera y sube métricas de productos con cantidad de devoluciones si el movimiento es
     de tipo 'mov_consumption'

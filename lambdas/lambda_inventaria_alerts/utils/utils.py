@@ -1,6 +1,3 @@
-
-from layers.inventaria_layer.python.inventaria_const import *
-
 def shipping_quantity_mean(shipping_movements, product_id):
     """
     Calcula el promedio de la cantidad de envíos diarios de un producto específico en los últimos 30 días.

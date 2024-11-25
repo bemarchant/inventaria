@@ -3,15 +3,6 @@ import json
 import os
 
 # inventaria_const.py
-def get_db_config():
-    secrets_rds = get_secret("prod/inventaria/rds/inventaria_db")
-    return {
-        "host": secrets_rds.get("host", "localhost"),
-        "db": secrets_rds.get("dbInstanceIdentifier", "default_db"),
-        "user": secrets_rds.get("username", "default_user"),
-        "password": secrets_rds.get("password", "default_password"),
-        "port": "5432",
-    }
 
 def get_secret(secret_name, region_name="us-east-1"):
     # Crear un cliente de Secrets Manager
@@ -26,20 +17,21 @@ def get_secret(secret_name, region_name="us-east-1"):
         print(f"Error al obtener el secreto: {e}")
         return None
 
-secrets_aws = get_secret("prod/inventaria/aws_cli")
-secrets_rds = get_secret("prod/inventaria/rds/inventaria_db")
+def get_db_config():
+    secrets_rds = get_secret("prod/inventaria/rds/inventaria_db")
+    secrets = {
+        "host": secrets_rds.get("host", "localhost"),
+        "db": secrets_rds.get("dbInstanceIdentifier", "default_db"),
+        "user": secrets_rds.get("username", "default_user"),
+        "password": secrets_rds.get("password", "default_password"),
+        "port": "5432",
+    }
+    return secrets
 
-# Asignar variables desde Secrets Manager o con valores predeterminados
-INVENTARIA_POSTGRES_DB = secrets_rds.get("dbInstanceIdentifier", "default_db")
-INVENTARIA_POSTGRES_USER = secrets_rds.get("username", "default_user")
-INVENTARIA_POSTGRES_PASSWORD = secrets_rds.get("password", "default_password")
-INVENTARIA_POSTGRES_HOST = secrets_rds.get("host", "localhost")
+secrets_aws = get_secret("prod/inventaria/aws_cli")
 AWS_SECRET_ACCESS_KEY = secrets_aws.get("AWS_SECRET_ACCESS_KEY", "")
 AWS_ACCESS_KEY_ID = secrets_aws.get("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = secrets_aws.get("AWS_SECRET_ACCESS_KEY", "")
-
-print(f"INVENTARIA_POSTGRES_HOST : {INVENTARIA_POSTGRES_HOST}")
-print(f"[DEBUG] INVENTARIA_POSTGRES_HOST: {INVENTARIA_POSTGRES_HOST}")
 
 # BUCKET_NAME = secrets.get("BUCKET_NAME", "default_bucket")
 # WHATSAPP_ACCESS_TOKEN = secrets.get("WHATSAPP_ACCESS_TOKEN", "")
@@ -47,13 +39,6 @@ print(f"[DEBUG] INVENTARIA_POSTGRES_HOST: {INVENTARIA_POSTGRES_HOST}")
 RED_ALERT = 10
 WARNING_ALERT = 5
 GREEN_ALERT = 0
-
-# Datos de conexión a la base de datos
-INVENTARIA_POSTGRES_DB="inventaria_db"
-INVENTARIA_POSTGRES_USER="inventaria" 
-INVENTARIA_POSTGRES_PASSWORD="NhQsFpmSjD3LwQc"
-INVENTARIA_POSTGRES_HOST="inventaria-db.ck37szplgscc.sa-east-1.rds.amazonaws.com"
-INVENTARIA_POSTGRES_PORT="5432"
 
 # Datos de BSALE - FARMACIA 
 BSALE_BASE_URL = "https://api.bsale.io/v1"

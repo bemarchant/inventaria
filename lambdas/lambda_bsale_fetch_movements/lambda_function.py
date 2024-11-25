@@ -22,19 +22,17 @@ def lambda_handler(event=None, context=None):
     start_time = time.time()
     chile_tz = pytz.timezone('America/Santiago')
     today = datetime.now(chile_tz).date()
-    date_str = (today - timedelta(days=0)).strftime('%Y-%m-%d')
-    print(f"update for : {date_str}")
-    print(f"INVENTARIA_POSTGRES_HOST : {INVENTARIA_POSTGRES_HOST}")
 
-    #Actualizamos el stock de los productos
-    # stocks = stocks_fetch()
-    # upload_stocks(stocks)
+    movements_day = (today - timedelta(days=(1))).strftime('%Y-%m-%d')
     
-    shippings = shippings_fetch(date_str)
+    stocks = stocks_fetch()
+    upload_stocks(stocks)
+    
+    shippings = shippings_fetch(movements_day)
     upload_shippings_inventaria_sheet(shippings=shippings)
-    consumptions = consumptions_fetch(date_str)
+    consumptions = consumptions_fetch(movements_day)
     upload_consumptions_inventaria_sheet(consumptions=consumptions) 
-    returns = returns_fetch(date_str)
+    returns = returns_fetch(movements_day)
     upload_returns_inventaria_sheet(returns)
 
     end_time = time.time()

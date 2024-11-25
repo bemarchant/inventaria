@@ -29,7 +29,7 @@ Resources:
         ScheduleTrigger:
           Type: Schedule
           Properties:
-            Schedule: "cron(30 6 * * ? *)"
+            Schedule: "cron(30 11 * * ? *)"
   Function2:
     Type: AWS::Serverless::Function
     Properties:

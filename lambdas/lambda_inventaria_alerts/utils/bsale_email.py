@@ -1,8 +1,17 @@
 import boto3
-from layers.inventaria_layer.python.inventaria_const import *
 from collections import defaultdict
-env = 'dev'
+import sys
+import os
 
+is_local = os.environ.get("AWS_EXECUTION_ENV") is None
+
+if is_local:
+    layer_path = os.path.join(
+        os.path.dirname(__file__), '..', '..', 'layers', 'inventaria_layer', 'python'
+    )
+    if layer_path not in sys.path:
+        sys.path.append(layer_path)
+        
 def send_alert_email(subject, metrics):
     # Agrupamos las métricas por metric_id
     metrics_by_type = defaultdict(list)
@@ -93,15 +102,15 @@ def send_alert_email(subject, metrics):
     aws_region = 'sa-east-1'
     ses = boto3.client('ses', region_name=aws_region)
 
-    cc_emails = inventaria_emails
-    to_emails = agunsa_emails
+    inventaria_emails = ["bemarchant@proton.me", 
+    "jesuspirquilaf@gmail.com", 
+    "inventariasup23@gmail.com",
+    "slewin@quot.cl"]
 
-    if env == 'dev':
-        cc_emails = developer_emails
-        to_emails = developer_emails
+    developer_emails = ["bemarchant@proton.me"]
 
     response = ses.send_email(
-        Destination={'ToAddresses': to_emails, 'CcAddresses': cc_emails},
+        Destination={'ToAddresses': developer_emails, 'CcAddresses': []},
         Message={
             'Body': {
                 'Html': {'Charset': 'UTF-8', 'Data': html_content},

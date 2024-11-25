@@ -527,7 +527,6 @@ def get_inventaria_stocks():
         conn.close()
 
 def upload_shippings_inventaria_sheet(shippings):
-    print(f"INVENTARIA_POSTGRES_HOST : {INVENTARIA_POSTGRES_HOST}")
     
     conn = get_db_connection()
     if not conn:
